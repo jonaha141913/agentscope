@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Example of using MilvusLiteStore in AgentScope RAG system."""
-import asyncio
-import sys
 from pathlib import Path
-from typing import List
+import sys
 
 # Add the src directory to sys.path to import from local development code
 src_path = Path(__file__).resolve().parent.parent.parent.parent / "src"
@@ -14,7 +12,7 @@ from agentscope.rag import MilvusLiteStore, Document, DocMetadata
 from agentscope.message import TextBlock
 
 
-async def example_basic_operations():
+async def example_basic_operations() -> None:
     """The example of basic CRUD operations with MilvusLiteStore."""
     print("\n" + "=" * 60)
     print("Test 1: Basic CRUD Operations")
@@ -103,7 +101,7 @@ async def example_basic_operations():
     print(f"\n✓ Got MilvusClient: {type(client).__name__}")
 
 
-async def example_filter_search():
+async def example_filter_search() -> None:
     """The example of search with metadata filtering."""
     print("\n" + "=" * 60)
     print("Test 2: Search with Metadata Filtering")
@@ -190,7 +188,7 @@ async def example_filter_search():
         print(f"  {i}. Doc ID: {result.metadata.doc_id}, Score: {result.score:.4f}")
 
 
-async def example_multiple_chunks():
+async def example_multiple_chunks() -> None:
     """The example of documents with multiple chunks."""
     print("\n" + "=" * 60)
     print("Test 3: Documents with Multiple Chunks")
@@ -251,7 +249,7 @@ async def example_multiple_chunks():
         print(f"     Score: {result.score:.4f}")
 
 
-async def example_distance_metrics():
+async def example_distance_metrics() -> None:
     """The example of different distance metrics."""
     print("\n" + "=" * 60)
     print("Test 4: Different Distance Metrics")
@@ -259,7 +257,7 @@ async def example_distance_metrics():
 
     # Test with different metrics
     metrics = ["COSINE", "L2", "IP"]
-    
+
     for metric in metrics:
         print(f"\n--- Testing {metric} metric ---")
         store = MilvusLiteStore(
@@ -290,7 +288,7 @@ async def example_distance_metrics():
         print(f"✓ {metric} metric: Score = {results[0].score:.4f}")
 
 
-async def main():
+async def main() -> None:
     """Run all example."""
     print("\n" + "=" * 60)
     print("MilvusLiteStore Comprehensive Test Suite")
