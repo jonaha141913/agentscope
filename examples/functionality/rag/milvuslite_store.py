@@ -251,7 +251,7 @@ async def example_multiple_chunks():
         print(f"     Score: {result.score:.4f}")
 
 
-async def example_distance_metrics():
+async def example_distance_metrics() -> None:
     """The example of different distance metrics."""
     print("\n" + "=" * 60)
     print("Test 4: Different Distance Metrics")
@@ -259,7 +259,7 @@ async def example_distance_metrics():
 
     # Test with different metrics
     metrics = ["COSINE", "L2", "IP"]
-    
+
     for metric in metrics:
         print(f"\n--- Testing {metric} metric ---")
         store = MilvusLiteStore(
@@ -286,11 +286,11 @@ async def example_distance_metrics():
             query_embedding=[0.1, 0.2, 0.3, 0.4],
             limit=1,
         )
-        
+
         print(f"✓ {metric} metric: Score = {results[0].score:.4f}")
 
 
-async def main():
+async def main() -> None:
     """Run all example."""
     print("\n" + "=" * 60)
     print("MilvusLiteStore Comprehensive Test Suite")
