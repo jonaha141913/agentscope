@@ -5,19 +5,19 @@ from ._document import (
     DocMetadata,
     Document,
 )
+from ._knowledge_base import KnowledgeBase
 from ._reader import (
     ReaderBase,
     TextReader,
     PDFReader,
     ImageReader,
 )
+from ._simple_knowledge import SimpleKnowledge
 from ._store import (
     VDBStoreBase,
     QdrantStore,
     MilvusLiteStore,
 )
-from ._knowledge_base import KnowledgeBase
-from ._simple_knowledge import SimpleKnowledge
 
 
 __all__ = [
