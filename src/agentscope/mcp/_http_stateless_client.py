@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 """The MCP streamable HTTP server."""
-from contextlib import _AsyncGeneratorContextManager
-from typing import Any, Callable, Awaitable, Literal, List
+from contextlib import _AsyncGeneratorContextManager, asynccontextmanager
+from datetime import timedelta
+from typing import Any, AsyncIterator, Callable, Awaitable, Literal, List
 
+import httpx
 import mcp.types
 from mcp import ClientSession
 from mcp.client.sse import sse_client
-from mcp.client.streamable_http import streamablehttp_client
+
+try:
+    from mcp.client.streamable_http import streamablehttp_client
+
+    streamable_http_client = None
+except ImportError:  # newer mcp releases renamed the transport client
+    streamablehttp_client = None
+    from mcp.client.streamable_http import streamable_http_client
 
 from . import MCPToolFunction
 from ._client_base import MCPClientBase
@@ -82,7 +91,52 @@ class HttpStatelessClient(MCPClientBase):
             return sse_client(**self.client_config)
 
         if self.transport == "streamable_http":
-            return streamablehttp_client(**self.client_config)
+            if streamablehttp_client is not None:
+                return streamablehttp_client(**self.client_config)
+
+            config = dict(self.client_config)
+
+            @asynccontextmanager
+            async def _streamable_http_client() -> AsyncIterator[Any]:
+                """Adapt the legacy keyword arguments to the new
+                `streamable_http_client` API, which expects an httpx client."""
+                url = config.pop("url")
+                headers = config.pop("headers", None)
+                timeout = config.pop("timeout", 30)
+                sse_read_timeout = config.pop("sse_read_timeout", 60 * 5)
+                terminate_on_close = config.pop("terminate_on_close", True)
+                auth = config.pop("auth", None)
+                httpx_client_factory = config.pop("httpx_client_factory", None)
+
+                if isinstance(timeout, timedelta):
+                    timeout = timeout.total_seconds()
+                if isinstance(sse_read_timeout, timedelta):
+                    sse_read_timeout = sse_read_timeout.total_seconds()
+
+                httpx_timeout = httpx.Timeout(timeout, read=sse_read_timeout)
+                if httpx_client_factory is not None:
+                    http_client = httpx_client_factory(
+                        headers=headers,
+                        timeout=httpx_timeout,
+                        auth=auth,
+                    )
+                else:
+                    http_client = httpx.AsyncClient(
+                        headers=headers,
+                        timeout=httpx_timeout,
+                        auth=auth,
+                        follow_redirects=True,
+                    )
+
+                async with http_client:
+                    async with streamable_http_client(
+                        url,
+                        http_client=http_client,
+                        terminate_on_close=terminate_on_close,
+                    ) as streams:
+                        yield streams
+
+            return _streamable_http_client()
 
         raise ValueError(
             f"Unsupported transport type: {self.transport}. "
