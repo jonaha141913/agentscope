@@ -12,8 +12,10 @@ import shortuuid
 
 from ...message import TextBlock
 from .._response import ToolResponse
+
 os.environ["PYTHONUTF8"] = "1"
 os.environ["PYTHONIOENCODING"] = "utf-8"
+
 
 async def execute_python_code(
     code: str,
@@ -79,9 +81,11 @@ async def execute_python_code(
             content=[
                 TextBlock(
                     type="text",
-                    text=f"<returncode>{returncode}</returncode>"
-                    f"<stdout>{stdout_str}</stdout>"
-                    f"<stderr>{stderr_str}</stderr>",
+                    text=(
+                        f"<returncode>{returncode}</returncode>"
+                        f"<stdout>{stdout_str}</stdout>"
+                        f"<stderr>{stderr_str}</stderr>"
+                    ),
                 ),
             ],
         )
