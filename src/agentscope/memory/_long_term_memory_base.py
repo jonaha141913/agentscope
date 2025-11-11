@@ -35,7 +35,6 @@ class LongTermMemoryBase(StateModule):
     async def retrieve(
         self,
         msg: Msg | list[Msg] | None,
-        limit: int = 5,
         **kwargs: Any,
     ) -> str:
         """A developer-designed method to retrieve information from the
