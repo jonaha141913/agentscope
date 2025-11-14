@@ -267,7 +267,8 @@ class ReMeLongTermMemoryBase(LongTermMemoryBase, metaclass=ABCMeta):
 
         embedding_dimensions = embedding_model.dimensions
         config_args.append(
-            f"embedding_model.default.params={{\"dimensions\": {embedding_dimensions}}}"
+            f"embedding_model.default.params={{\"dimensions\": "
+            f"{embedding_dimensions}}}"
         )
 
         # Attempt to import and initialize ReMe
@@ -295,7 +296,7 @@ class ReMeLongTermMemoryBase(LongTermMemoryBase, metaclass=ABCMeta):
             config_path=reme_config_path,
             # Additional ReMe-specific configurations
             **kwargs,
-        )
+        ),
 
         # Track if the app context is active (started via __aenter__)
         self._app_started = False
